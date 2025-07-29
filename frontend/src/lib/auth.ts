@@ -36,27 +36,20 @@ export interface AuthError {
 const setCookie = (name: string, value: string, days: number = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
-  
+
   // Simplified cookie settings for localhost development
   const cookieString = `${name}=${value}; expires=${expires.toUTCString()}; path=/`;
-  console.log("Setting cookie:", cookieString); // Debug log
   document.cookie = cookieString;
-  
-  // Verify cookie was set
-  setTimeout(() => {
-    const verification = getCookie(name);
-    console.log("Cookie verification after set:", verification);
-  }, 100);
 };
 
 const getCookie = (name: string): string | null => {
   if (typeof window === "undefined") return null;
-  
+
   const nameEQ = name + "=";
-  const ca = document.cookie.split(';');
+  const ca = document.cookie.split(";");
   for (let i = 0; i < ca.length; i++) {
     let c = ca[i];
-    while (c.charAt(0) === ' ') c = c.substring(1, c.length);
+    while (c.charAt(0) === " ") c = c.substring(1, c.length);
     if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
   }
   return null;
@@ -75,17 +68,14 @@ class AuthAPI {
 
     if (includeAuth && typeof window !== "undefined") {
       let token = getCookie("auth_token");
-      
+
       // Fallback to localStorage if cookie is empty (for debugging)
       if (!token) {
         token = localStorage.getItem("auth_token_backup");
-        console.log("Cookie empty, using localStorage backup:", token);
       }
-      
+
       if (token) {
         headers["Authorization"] = `Token ${token}`;
-      } else {
-        console.log("No token found in cookie or localStorage");
       }
     }
 
@@ -124,30 +114,19 @@ class AuthAPI {
   }
 
   async verifyMagicLink(token: string): Promise<AuthResponse> {
-    console.log("Starting magic link verification with token:", token);
-    
     const response = await fetch(`${API_BASE}/api/auth/magic-link/verify/`, {
       method: "POST",
       headers: this.getHeaders(false),
       body: JSON.stringify({ token }),
     });
 
-    console.log("Verify API response status:", response.status);
     const data = await this.handleResponse<AuthResponse>(response);
-    console.log("Verify API response data:", data);
 
     // Store token in secure cookie instead of localStorage
     if (typeof window !== "undefined" && data.token) {
-      console.log("Setting cookie with token:", data.token); // Debug log
-      
-      // Try both localStorage and cookie for debugging
+      setCookie("auth_token", data.token);
+      // Keep backup in localStorage for debugging
       localStorage.setItem("auth_token_backup", data.token);
-      setCookie("auth_token", data.token, 7); // 7 days expiry
-      
-      console.log("Cookie set, verifying:", getCookie("auth_token")); // Debug log
-      console.log("LocalStorage backup:", localStorage.getItem("auth_token_backup")); // Debug log
-    } else {
-      console.log("No token in response or not in browser environment");
     }
 
     return data;
