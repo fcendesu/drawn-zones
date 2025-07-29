@@ -44,7 +44,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-400"></div>
       </div>
     );
@@ -52,8 +52,8 @@ export default function Dashboard() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center p-4">
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
+      <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black flex items-center justify-center p-4">
+        <div className="bg-black/40 backdrop-blur-lg border border-cyan-500/20 rounded-2xl shadow-2xl w-full max-w-md p-8 text-center">
           <div className="bg-red-500/20 rounded-full p-3 w-16 h-16 mx-auto mb-4 flex items-center justify-center">
             <svg
               className="w-8 h-8 text-red-400"
@@ -80,9 +80,9 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-slate-900 to-black">
       {/* Header */}
-      <header className="bg-slate-800/50 backdrop-blur-sm border-b border-slate-700">
+      <header className="bg-black/50 backdrop-blur-md border-b border-cyan-500/20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
@@ -103,7 +103,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700 rounded-2xl shadow-2xl p-8">
+        <div className="bg-black/40 backdrop-blur-lg border border-cyan-500/20 rounded-2xl shadow-2xl p-8">
           <div className="text-center mb-8">
             <div className="bg-green-500/20 rounded-full p-4 w-20 h-20 mx-auto mb-4 flex items-center justify-center">
               <svg
@@ -129,7 +129,7 @@ export default function Dashboard() {
           </div>
 
           {/* User Info Card */}
-          <div className="bg-slate-700/50 rounded-xl p-6 mb-8">
+          <div className="bg-black/30 backdrop-blur-sm rounded-xl p-6 mb-8 border border-cyan-500/20">
             <h3 className="text-xl font-semibold text-white mb-4">
               Your Profile
             </h3>
@@ -138,7 +138,7 @@ export default function Dashboard() {
                 <label className="block text-sm font-medium text-gray-400 mb-1">
                   Email Address
                 </label>
-                <p className="text-white bg-slate-600/50 rounded-lg px-3 py-2">
+                <p className="text-white bg-black/30 border border-cyan-500/20 rounded-lg px-3 py-2">
                   {user?.email}
                 </p>
               </div>
@@ -146,7 +146,7 @@ export default function Dashboard() {
                 <label className="block text-sm font-medium text-gray-400 mb-1">
                   Member Since
                 </label>
-                <p className="text-white bg-slate-600/50 rounded-lg px-3 py-2">
+                <p className="text-white bg-black/30 border border-cyan-500/20 rounded-lg px-3 py-2">
                   {user?.date_joined
                     ? new Date(user.date_joined).toLocaleDateString()
                     : "N/A"}
@@ -156,7 +156,7 @@ export default function Dashboard() {
                 <label className="block text-sm font-medium text-gray-400 mb-1">
                   Email Verified
                 </label>
-                <p className="text-white bg-slate-600/50 rounded-lg px-3 py-2 flex items-center">
+                <p className="text-white bg-black/30 border border-cyan-500/20 rounded-lg px-3 py-2 flex items-center">
                   {user?.is_email_verified ? (
                     <>
                       <svg
@@ -194,7 +194,7 @@ export default function Dashboard() {
                 <label className="block text-sm font-medium text-gray-400 mb-1">
                   User ID
                 </label>
-                <p className="text-white bg-slate-600/50 rounded-lg px-3 py-2">
+                <p className="text-white bg-black/30 border border-cyan-500/20 rounded-lg px-3 py-2">
                   #{user?.id}
                 </p>
               </div>
