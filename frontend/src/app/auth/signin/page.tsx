@@ -231,8 +231,7 @@ export default function SignInPage() {
               {isNewUser && (
                 <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4">
                   <p className="text-green-300 text-sm">
-                    🎉 Welcome! We&apos;ve created your account and sent you a
-                    welcome email.
+                    🎉 Welcome! We&apos;ve created your account for you.
                   </p>
                 </div>
               )}

@@ -127,10 +127,13 @@ class MagicLinkEmailServiceTests(TestCase):
         self.assertIn(str(self.magic_link.token), email.body)
         self.assertIn('http://testserver/auth/verify', email.body)
     
-    def test_send_welcome_email(self):
-        """Test sending welcome email"""
+    def test_send_welcome_email_disabled(self):
+        """Test that welcome email is disabled"""
+        # Welcome email functionality has been disabled
+        # This test verifies the method still exists but is not called in the flow
         result = MagicLinkEmailService.send_welcome_email(self.user)
         
+        # The method should still work if called directly, but it's not used in the auth flow
         self.assertTrue(result)
         self.assertEqual(len(mail.outbox), 1)
         
@@ -169,8 +172,8 @@ class MagicLinkAPITests(APITestCase):
         magic_link = MagicLink.objects.get(user=user)
         self.assertIsNotNone(magic_link)
         
-        # Check email was sent
-        self.assertEqual(len(mail.outbox), 2)  # Welcome + magic link emails
+        # Check email was sent (only magic link email, welcome email disabled)
+        self.assertEqual(len(mail.outbox), 1)  # Only magic link email
     
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_send_magic_link_existing_user(self):

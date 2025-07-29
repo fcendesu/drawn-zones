@@ -82,9 +82,9 @@ def send_magic_link(request):
             email_sent = MagicLinkEmailService.send_magic_link(user, magic_link, request)
             
             if email_sent:
-                # Send welcome email for new users
-                if created:
-                    MagicLinkEmailService.send_welcome_email(user)
+                # Welcome email disabled per user request
+                # if created:
+                #     MagicLinkEmailService.send_welcome_email(user)
                 
                 logger.info(f"Magic link sent successfully to {email} (new_user: {created})")
                 
