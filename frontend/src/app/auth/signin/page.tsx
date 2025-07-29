@@ -3,21 +3,31 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
+import { authAPI } from "@/lib/auth";
 
 export default function SignInPage() {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
+  const [error, setError] = useState("");
+  const [isNewUser, setIsNewUser] = useState(false);
 
   const handleMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    setError("");
 
-    // Simulate API call
-    setTimeout(() => {
+    try {
+      const response = await authAPI.sendMagicLink(email);
       setMagicLinkSent(true);
+      setIsNewUser(response.new_user);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to send magic link"
+      );
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   const handleGitHubSignIn = () => {
@@ -58,6 +68,12 @@ export default function SignInPage() {
             <>
               {/* Magic Link Form */}
               <form onSubmit={handleMagicLink} className="space-y-6 mb-6">
+                {error && (
+                  <div className="bg-red-500/10 border border-red-500/30 rounded-lg p-3 text-red-300 text-sm">
+                    {error}
+                  </div>
+                )}
+
                 <div>
                   <label
                     htmlFor="email"
@@ -208,10 +224,18 @@ export default function SignInPage() {
               <h2 className="text-xl font-semibold text-white mb-2">
                 Check your email
               </h2>
-              <p className="text-gray-300 mb-6">
+              <p className="text-gray-300 mb-4">
                 We sent a magic link to{" "}
                 <span className="text-cyan-400">{email}</span>
               </p>
+              {isNewUser && (
+                <div className="bg-green-500/10 border border-green-500/30 rounded-lg p-3 mb-4">
+                  <p className="text-green-300 text-sm">
+                    🎉 Welcome! We&apos;ve created your account and sent you a
+                    welcome email.
+                  </p>
+                </div>
+              )}
               <p className="text-sm text-gray-400 mb-6">
                 Click the link in the email to sign in. The link will expire in
                 15 minutes.
@@ -220,6 +244,8 @@ export default function SignInPage() {
                 onClick={() => {
                   setMagicLinkSent(false);
                   setEmail("");
+                  setError("");
+                  setIsNewUser(false);
                 }}
                 className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm"
               >
