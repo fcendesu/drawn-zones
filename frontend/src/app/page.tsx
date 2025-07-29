@@ -175,7 +175,15 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="text-center text-gray-400">
             <p>
-              &copy; 2025 DrawnZones. Built for Full Stack Engineer Assessment.
+              &copy; 2025 DrawnZones. Built for Full Stack Engineer Candidate
+              Task by{" "}
+              <a
+                href="https://github.com/fcendesu"
+                className="text-cyan-400 hover:text-cyan-300 transition-colors"
+              >
+                Furkan Çakmak
+              </a>
+              .
             </p>
           </div>
         </div>
