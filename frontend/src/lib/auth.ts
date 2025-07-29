@@ -67,12 +67,7 @@ class AuthAPI {
     };
 
     if (includeAuth && typeof window !== "undefined") {
-      let token = getCookie("auth_token");
-
-      // Fallback to localStorage if cookie is empty (for debugging)
-      if (!token) {
-        token = localStorage.getItem("auth_token_backup");
-      }
+      const token = getCookie("auth_token");
 
       if (token) {
         headers["Authorization"] = `Token ${token}`;
@@ -122,11 +117,9 @@ class AuthAPI {
 
     const data = await this.handleResponse<AuthResponse>(response);
 
-    // Store token in secure cookie instead of localStorage
+    // Store token in secure cookie
     if (typeof window !== "undefined" && data.token) {
       setCookie("auth_token", data.token);
-      // Keep backup in localStorage for debugging
-      localStorage.setItem("auth_token_backup", data.token);
     }
 
     return data;
