@@ -23,7 +23,7 @@ export default function LandingPage() {
             <div className="flex items-center space-x-4">
               <Link
                 href="/auth/signin"
-                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 font-medium shadow-lg shadow-cyan-500/25"
+                className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-4 py-2 rounded-lg hover:from-cyan-400 hover:to-blue-400 active:scale-95 active:shadow-inner transition-all duration-200 font-medium shadow-lg shadow-cyan-500/25 transform hover:scale-105"
               >
                 Sign In
               </Link>
@@ -54,13 +54,13 @@ export default function LandingPage() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <Link
               href="/auth/signin"
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-8 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-400 transition-all duration-300 font-medium text-lg w-full sm:w-auto shadow-xl shadow-cyan-500/25 border border-cyan-400/30"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-8 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-400 active:scale-95 active:shadow-inner transition-all duration-200 font-medium text-lg w-full sm:w-auto shadow-xl shadow-cyan-500/25 border border-cyan-400/30 transform hover:scale-105"
             >
               Get Started
             </Link>
             <Link
               href="/demo"
-              className="bg-black/40 backdrop-blur-sm text-cyan-400 px-8 py-3 rounded-lg border-2 border-cyan-500/50 hover:bg-cyan-500/10 hover:border-cyan-400 transition-all duration-300 font-medium text-lg w-full sm:w-auto shadow-lg"
+              className="bg-black/40 backdrop-blur-sm text-cyan-400 px-8 py-3 rounded-lg border-2 border-cyan-500/50 hover:bg-cyan-500/10 hover:border-cyan-400 active:scale-95 active:bg-cyan-500/20 transition-all duration-200 font-medium text-lg w-full sm:w-auto shadow-lg transform hover:scale-105"
             >
               View Demo
             </Link>
