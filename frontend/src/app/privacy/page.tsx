@@ -40,9 +40,6 @@ export default function PrivacyPage() {
             <h1 className="text-4xl font-bold text-white mb-4">
               Privacy Policy
             </h1>
-            <p className="text-gray-300">
-              Last updated: {new Date().toLocaleDateString()}
-            </p>
           </div>
 
           {/* Content */}
