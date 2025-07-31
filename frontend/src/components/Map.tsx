@@ -41,6 +41,7 @@ export default function Map({
   const map = useRef<mapboxgl.Map | null>(null);
   const draw = useRef<MapboxDraw | null>(null);
   const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [isMapReady, setIsMapReady] = useState(false);
 
   useEffect(() => {
     if (!mapContainer.current) return;
@@ -124,7 +125,17 @@ export default function Map({
 
     // Set up event listeners
     map.current.on("load", () => {
+      console.log("Map loaded");
       setIsMapLoaded(true);
+    });
+
+    map.current.on("styledata", () => {
+      console.log("Style data loaded");
+    });
+
+    map.current.on("idle", () => {
+      console.log("Map idle - style should be ready");
+      setIsMapReady(true);
     });
 
     map.current.on("draw.create", (e) => {
@@ -155,10 +166,25 @@ export default function Map({
 
   // Add saved rectangles to map
   useEffect(() => {
-    if (!map.current || !isMapLoaded) return;
-
-    // Check if style is loaded
-    if (!map.current.isStyleLoaded()) return;
+    console.log(
+      "Map useEffect triggered - rectangles:",
+      rectangles,
+      "isMapLoaded:",
+      isMapLoaded,
+      "isMapReady:",
+      isMapReady
+    );
+    if (!map.current || !isMapLoaded || !isMapReady) {
+      console.log(
+        "Map not ready - map.current:",
+        !!map.current,
+        "isMapLoaded:",
+        isMapLoaded,
+        "isMapReady:",
+        isMapReady
+      );
+      return;
+    }
 
     // Remove existing rectangles
     if (map.current.getSource("rectangles")) {
@@ -171,15 +197,20 @@ export default function Map({
     const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
     console.log("Map received rectangles:", safeRectangles);
     if (safeRectangles.length > 0) {
-      const features = safeRectangles.map((rect) => ({
-        type: "Feature" as const,
-        properties: {
-          id: rect.id,
-          name: rect.name,
-          created_at: rect.created_at,
-        },
-        geometry: rect.coordinates as any,
-      }));
+      console.log("Processing", safeRectangles.length, "rectangles");
+      const features = safeRectangles.map((rect) => {
+        console.log("Processing rectangle:", rect);
+        return {
+          type: "Feature" as const,
+          properties: {
+            id: rect.id,
+            name: rect.name,
+            created_at: rect.created_at,
+          },
+          geometry: rect.coordinates as any,
+        };
+      });
+      console.log("Created features:", features);
 
       map.current.addSource("rectangles", {
         type: "geojson",
@@ -237,7 +268,7 @@ export default function Map({
         }
       });
     }
-  }, [rectangles, isMapLoaded, onRectangleSelected]);
+  }, [rectangles, isMapLoaded, isMapReady, onRectangleSelected]);
 
   return (
     <div className="relative w-full h-full">
