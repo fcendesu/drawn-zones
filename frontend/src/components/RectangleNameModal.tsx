@@ -7,6 +7,7 @@ interface RectangleNameModalProps {
   onClose: () => void;
   onSave: (name: string) => void;
   coordinates?: any;
+  existingNames?: string[];
 }
 
 export default function RectangleNameModal({
@@ -14,14 +15,24 @@ export default function RectangleNameModal({
   onClose,
   onSave,
   coordinates,
+  existingNames = [],
 }: RectangleNameModalProps) {
   const [name, setName] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState("");
+
+  // Check if name already exists
+  const isNameDuplicate =
+    name.trim() &&
+    existingNames.some(
+      (existingName) => existingName.toLowerCase() === name.trim().toLowerCase()
+    );
 
   useEffect(() => {
     if (isOpen) {
       setName("");
       setIsSubmitting(false);
+      setError("");
     }
   }, [isOpen]);
 
@@ -29,12 +40,26 @@ export default function RectangleNameModal({
     e.preventDefault();
     if (!name.trim()) return;
 
+    // Check for duplicate names
+    const trimmedName = name.trim();
+    if (
+      existingNames.some(
+        (existingName) =>
+          existingName.toLowerCase() === trimmedName.toLowerCase()
+      )
+    ) {
+      setError("A rectangle with this name already exists");
+      return;
+    }
+
     setIsSubmitting(true);
+    setError("");
     try {
-      await onSave(name.trim());
+      await onSave(trimmedName);
       onClose();
     } catch (error) {
       console.error("Error saving rectangle:", error);
+      setError("Failed to save rectangle. Please try again.");
     } finally {
       setIsSubmitting(false);
     }
@@ -79,13 +104,26 @@ export default function RectangleNameModal({
                 id="rectangle-name"
                 type="text"
                 value={name}
-                onChange={(e) => setName(e.target.value)}
+                onChange={(e) => {
+                  setName(e.target.value);
+                  if (error) setError("");
+                }}
+                disabled={isSubmitting}
                 placeholder="Enter a name for your rectangle..."
-                className="w-full px-4 py-3 bg-black/30 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200"
+                className={`w-full px-4 py-3 bg-black/30 border rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all duration-200 ${
+                  error || isNameDuplicate
+                    ? "border-red-500"
+                    : "border-gray-600"
+                }`}
                 autoFocus
                 required
                 maxLength={100}
               />
+              {(error || isNameDuplicate) && (
+                <p className="text-red-400 text-sm mt-1">
+                  {error || "A rectangle with this name already exists"}
+                </p>
+              )}
             </div>
 
             {coordinates && (
@@ -108,7 +146,7 @@ export default function RectangleNameModal({
               </button>
               <button
                 type="submit"
-                disabled={!name.trim() || isSubmitting}
+                disabled={!name.trim() || isSubmitting || isNameDuplicate}
                 className="flex-1 px-4 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg font-medium transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (

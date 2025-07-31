@@ -247,6 +247,7 @@ export default function Dashboard() {
         }}
         onSave={handleRectangleSaved}
         coordinates={pendingCoordinates}
+        existingNames={rectangles.map((r) => r.name)}
       />
     </div>
   );

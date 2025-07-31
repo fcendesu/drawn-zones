@@ -128,7 +128,8 @@ export default function Map({
       setIsMapLoaded(true);
     });
 
-    map.current.on("idle", () => {
+    // Wait for both load and style to be ready
+    map.current.on("styledata", () => {
       setIsMapReady(true);
     });
 
@@ -164,113 +165,130 @@ export default function Map({
       return;
     }
 
-    // Remove existing rectangles
-    if (map.current.getSource("rectangles")) {
-      map.current.removeLayer("rectangles-fill");
-      map.current.removeLayer("rectangles-stroke");
-      map.current.removeSource("rectangles");
-    }
+    // Add a small delay to ensure style is fully loaded
+    const timeoutId = setTimeout(() => {
+      if (!map.current) return;
 
-    // Add new rectangles
-    const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
-    if (safeRectangles.length > 0) {
-      const features = safeRectangles.map((rect) => ({
-        type: "Feature" as const,
-        properties: {
-          id: rect.id,
-          name: rect.name,
-          created_at: rect.created_at,
-        },
-        geometry: rect.coordinates as any,
-      }));
+      // Remove existing rectangles
+      if (map.current.getSource("rectangles")) {
+        map.current.removeLayer("rectangles-fill");
+        map.current.removeLayer("rectangles-stroke");
+        map.current.removeSource("rectangles");
+      }
 
-      map.current.addSource("rectangles", {
-        type: "geojson",
-        data: {
-          type: "FeatureCollection",
-          features,
-        },
-      });
+      // Add new rectangles
+      const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
+      if (safeRectangles.length > 0) {
+        const features = safeRectangles.map((rect) => ({
+          type: "Feature" as const,
+          properties: {
+            id: rect.id,
+            name: rect.name,
+            created_at: rect.created_at,
+          },
+          geometry: rect.coordinates as any,
+        }));
 
-      // Add fill layer
-      map.current.addLayer({
-        id: "rectangles-fill",
-        type: "fill",
-        source: "rectangles",
-        paint: {
-          "fill-color": "#3bb2d0",
-          "fill-opacity": 0.2,
-        },
-      });
+        map.current.addSource("rectangles", {
+          type: "geojson",
+          data: {
+            type: "FeatureCollection",
+            features,
+          },
+        });
 
-      // Add stroke layer
-      map.current.addLayer({
-        id: "rectangles-stroke",
-        type: "line",
-        source: "rectangles",
-        paint: {
-          "line-color": "#3bb2d0",
-          "line-width": 2,
-        },
-      });
+        // Add fill layer
+        map.current.addLayer({
+          id: "rectangles-fill",
+          type: "fill",
+          source: "rectangles",
+          paint: {
+            "fill-color": "#3bb2d0",
+            "fill-opacity": 0.2,
+          },
+        });
 
-      // Add click handler
-      map.current.on("click", "rectangles-fill", (e) => {
-        if (e.features && e.features.length > 0) {
-          const feature = e.features[0];
-          const rectangle = rectangles.find(
-            (r) => r.id === feature.properties?.id
-          );
-          if (rectangle && onRectangleSelected) {
-            onRectangleSelected(rectangle);
-          }
-        }
-      });
+        // Add stroke layer
+        map.current.addLayer({
+          id: "rectangles-stroke",
+          type: "line",
+          source: "rectangles",
+          paint: {
+            "line-color": "#3bb2d0",
+            "line-width": 2,
+          },
+        });
 
-      // Add right-click handler for delete
-      map.current.on("contextmenu", "rectangles-fill", (e) => {
-        e.preventDefault();
-        if (e.features && e.features.length > 0) {
-          const feature = e.features[0];
-          const rectangle = rectangles.find(
-            (r) => r.id === feature.properties?.id
-          );
-          if (rectangle && onRectangleDeleted) {
-            if (
-              confirm(`Are you sure you want to delete "${rectangle.name}"?`)
-            ) {
-              onRectangleDeleted(rectangle.id);
+        // Add click handler
+        map.current.on("click", "rectangles-fill", (e) => {
+          if (e.features && e.features.length > 0) {
+            const feature = e.features[0];
+            const rectangle = rectangles.find(
+              (r) => r.id === feature.properties?.id
+            );
+            if (rectangle && onRectangleSelected) {
+              onRectangleSelected(rectangle);
             }
           }
-        }
-      });
+        });
 
-      // Change cursor on hover
-      map.current.on("mouseenter", "rectangles-fill", () => {
-        if (map.current) {
-          map.current.getCanvas().style.cursor = "pointer";
-        }
-      });
+        // Add right-click handler for delete
+        map.current.on("contextmenu", "rectangles-fill", (e) => {
+          e.preventDefault();
+          if (e.features && e.features.length > 0) {
+            const feature = e.features[0];
+            const rectangle = rectangles.find(
+              (r) => r.id === feature.properties?.id
+            );
+            if (rectangle && onRectangleDeleted) {
+              if (
+                confirm(`Are you sure you want to delete "${rectangle.name}"?`)
+              ) {
+                onRectangleDeleted(rectangle.id);
+              }
+            }
+          }
+        });
 
-      map.current.on("mouseleave", "rectangles-fill", () => {
-        if (map.current) {
-          map.current.getCanvas().style.cursor = "";
-        }
-      });
+        // Change cursor on hover
+        map.current.on("mouseenter", "rectangles-fill", () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = "pointer";
+          }
+        });
 
-      // Add hover effect for delete indication
-      map.current.on("mouseenter", "rectangles-fill", () => {
-        if (map.current) {
-          map.current.setPaintProperty("rectangles-fill", "fill-opacity", 0.4);
-        }
-      });
+        map.current.on("mouseleave", "rectangles-fill", () => {
+          if (map.current) {
+            map.current.getCanvas().style.cursor = "";
+          }
+        });
 
-      map.current.on("mouseleave", "rectangles-fill", () => {
-        if (map.current) {
-          map.current.setPaintProperty("rectangles-fill", "fill-opacity", 0.2);
-        }
-      });
-    }
+        // Add hover effect for delete indication
+        map.current.on("mouseenter", "rectangles-fill", () => {
+          if (map.current) {
+            map.current.setPaintProperty(
+              "rectangles-fill",
+              "fill-opacity",
+              0.4
+            );
+          }
+        });
+
+        map.current.on("mouseleave", "rectangles-fill", () => {
+          if (map.current) {
+            map.current.setPaintProperty(
+              "rectangles-fill",
+              "fill-opacity",
+              0.2
+            );
+          }
+        });
+      }
+    }, 100); // 100ms delay
+
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [rectangles, isMapLoaded, isMapReady, onRectangleSelected]);
 
   return (

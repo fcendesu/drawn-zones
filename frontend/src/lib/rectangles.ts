@@ -56,8 +56,11 @@ class RectangleAPI {
         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
       } else if (data.error) {
         errorMessage = data.error;
+      } else if (data.detail) {
+        errorMessage = data.detail;
       }
 
+      console.error("API Error Response:", data);
       throw new Error(errorMessage);
     }
 
