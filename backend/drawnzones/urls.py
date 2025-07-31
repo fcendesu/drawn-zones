@@ -36,6 +36,11 @@ def api_root(request):
                 'status': '/api/auth/status/',
                 'logout': '/api/auth/logout/',
             },
+            'rectangles': {
+                'list_create': '/api/rectangles/',
+                'detail': '/api/rectangles/{id}/',
+                'stats': '/api/rectangles/stats/',
+            },
             'admin': '/admin/',
             'api_auth': '/api-auth/',
         },
@@ -54,5 +59,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api-auth/', include('rest_framework.urls')),  # DRF login/logout views
     path('api/auth/', include('authentication.urls')),  # Our authentication endpoints
+    path('api/rectangles/', include('rectangles.urls')),  # Rectangle endpoints
     path('api/', api_root, name='api_root'),  # API root
 ]

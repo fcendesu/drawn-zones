@@ -70,7 +70,8 @@ class RectangleAPI {
       headers: this.getHeaders(),
     });
 
-    return this.handleResponse<Rectangle[]>(response);
+    const data = await this.handleResponse<Rectangle[]>(response);
+    return Array.isArray(data) ? data : [];
   }
 
   async createRectangle(data: CreateRectangleData): Promise<Rectangle> {

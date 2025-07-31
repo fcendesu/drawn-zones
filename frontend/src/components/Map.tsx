@@ -157,6 +157,9 @@ export default function Map({
   useEffect(() => {
     if (!map.current || !isMapLoaded) return;
 
+    // Check if style is loaded
+    if (!map.current.isStyleLoaded()) return;
+
     // Remove existing rectangles
     if (map.current.getSource("rectangles")) {
       map.current.removeLayer("rectangles-fill");

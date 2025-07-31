@@ -51,9 +51,10 @@ export default function Dashboard() {
   const loadRectangles = async () => {
     try {
       const rectanglesData = await rectangleAPI.getRectangles();
-      setRectangles(rectanglesData);
+      setRectangles(Array.isArray(rectanglesData) ? rectanglesData : []);
     } catch (error) {
       console.error("Failed to load rectangles:", error);
+      setRectangles([]); // Ensure we always have an array
     }
   };
 
@@ -79,7 +80,10 @@ export default function Dashboard() {
         name,
         coordinates: pendingCoordinates,
       });
-      setRectangles((prev) => [newRectangle, ...prev]);
+      setRectangles((prev) => {
+        const safePrev = Array.isArray(prev) ? prev : [];
+        return [newRectangle, ...safePrev];
+      });
       setPendingCoordinates(null);
     } catch (error) {
       console.error("Failed to save rectangle:", error);
@@ -89,7 +93,10 @@ export default function Dashboard() {
   const handleRectangleDeleted = async (id: number) => {
     try {
       await rectangleAPI.deleteRectangle(id);
-      setRectangles((prev) => prev.filter((r) => r.id !== id));
+      setRectangles((prev) => {
+        const safePrev = Array.isArray(prev) ? prev : [];
+        return safePrev.filter((r) => r.id !== id);
+      });
       if (selectedRectangle?.id === id) {
         setSelectedRectangle(null);
       }
