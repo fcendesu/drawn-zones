@@ -350,7 +350,7 @@ export default function Map({
           </button>
           <button
             onClick={() => draw.current?.changeMode("simple_select")}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors mr-1  "
+            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors  "
           >
             Select
           </button>

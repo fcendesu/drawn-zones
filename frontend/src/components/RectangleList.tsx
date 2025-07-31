@@ -32,8 +32,16 @@ export default function RectangleList({
   const [hoveredRectangle, setHoveredRectangle] = useState<Rectangle | null>(
     null
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10;
 
   const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
+
+  // Calculate pagination
+  const totalPages = Math.ceil(safeRectangles.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentRectangles = safeRectangles.slice(startIndex, endIndex);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -76,7 +84,7 @@ export default function RectangleList({
   }
 
   return (
-    <div className="bg-black/40 backdrop-blur-lg rounded-lg border border-cyan-500/20">
+    <div className="bg-black/40 backdrop-blur-lg rounded-lg border border-cyan-500/20 h-full flex flex-col">
       <div className="p-4 border-b border-cyan-500/20">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-white">
@@ -93,8 +101,8 @@ export default function RectangleList({
         </div>
       </div>
 
-      <div className="max-h-96 overflow-y-auto">
-        {safeRectangles.map((rectangle) => (
+      <div className="flex-1 overflow-y-auto">
+        {currentRectangles.map((rectangle) => (
           <div
             key={rectangle.id}
             className={`group p-4 border-b border-gray-700/50 last:border-b-0 cursor-pointer transition-all duration-200 ${
@@ -159,6 +167,65 @@ export default function RectangleList({
           </div>
         ))}
       </div>
+
+      {/* Pagination Controls */}
+      {totalPages > 1 && (
+        <div className="p-4 border-t border-cyan-500/20">
+          <div className="flex items-center justify-between">
+            <div className="text-sm text-gray-400">
+              Showing {startIndex + 1}-
+              {Math.min(endIndex, safeRectangles.length)} of{" "}
+              {safeRectangles.length} zones
+            </div>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                disabled={currentPage === 1}
+                className="px-3 py-1 rounded text-sm font-medium transition-colors bg-gray-600 hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Previous
+              </button>
+              <div className="flex items-center space-x-1">
+                {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (currentPage >= totalPages - 2) {
+                    pageNum = totalPages - 4 + i;
+                  } else {
+                    pageNum = currentPage - 2 + i;
+                  }
+
+                  return (
+                    <button
+                      key={pageNum}
+                      onClick={() => setCurrentPage(pageNum)}
+                      className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                        currentPage === pageNum
+                          ? "bg-cyan-500 text-white"
+                          : "bg-gray-600 hover:bg-gray-700 text-white"
+                      }`}
+                    >
+                      {pageNum}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() =>
+                  setCurrentPage(Math.min(totalPages, currentPage + 1))
+                }
+                disabled={currentPage === totalPages}
+                className="px-3 py-1 rounded text-sm font-medium transition-colors bg-gray-600 hover:bg-gray-700 text-white disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

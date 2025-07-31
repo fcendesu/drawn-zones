@@ -212,18 +212,15 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
           <div className="mb-6">
-            <h2 className="text-2xl font-bold text-white mb-2">
-              Welcome back, {user?.first_name || user?.email}!
-            </h2>
             <p className="text-gray-400">
               Draw rectangles on the map, name them, and manage your zones.
             </p>
           </div>
 
           {/* Map and Rectangle List */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-240px)]">
             {/* Rectangle List */}
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 h-full">
               <RectangleList
                 rectangles={rectangles}
                 onRectangleSelect={handleRectangleSelected}
@@ -235,7 +232,7 @@ export default function Dashboard() {
             </div>
 
             {/* Map */}
-            <div className="lg:col-span-2 bg-black/20 rounded-lg border border-cyan-500/20 overflow-hidden">
+            <div className="lg:col-span-3 bg-black/20 rounded-lg border border-cyan-500/20 overflow-hidden h-[600px]">
               <Map
                 rectangles={rectangles}
                 onRectangleCreated={handleRectangleCreated}
