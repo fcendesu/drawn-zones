@@ -24,9 +24,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
-        console.log("Fetching user profile...");
         const userProfile = await authAPI.getProfile();
-        console.log("User profile loaded:", userProfile);
         setUser(userProfile);
       } catch (error) {
         console.error("Failed to load user profile:", error);
@@ -53,9 +51,7 @@ export default function Dashboard() {
 
   const loadRectangles = async () => {
     try {
-      console.log("Loading rectangles...");
       const rectanglesData = await rectangleAPI.getRectangles();
-      console.log("Loaded rectangles:", rectanglesData);
       setRectangles(Array.isArray(rectanglesData) ? rectanglesData : []);
     } catch (error) {
       console.error("Failed to load rectangles:", error);
@@ -113,6 +109,28 @@ export default function Dashboard() {
   const handleRectangleSelected = (rectangle: Rectangle) => {
     setSelectedRectangle(rectangle);
   };
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Delete" || event.key === "Backspace") {
+        if (selectedRectangle) {
+          if (
+            confirm(
+              `Are you sure you want to delete "${selectedRectangle.name}"?`
+            )
+          ) {
+            handleRectangleDeleted(selectedRectangle.id);
+          }
+        }
+      }
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedRectangle]);
 
   if (loading) {
     return (

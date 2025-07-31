@@ -125,16 +125,10 @@ export default function Map({
 
     // Set up event listeners
     map.current.on("load", () => {
-      console.log("Map loaded");
       setIsMapLoaded(true);
     });
 
-    map.current.on("styledata", () => {
-      console.log("Style data loaded");
-    });
-
     map.current.on("idle", () => {
-      console.log("Map idle - style should be ready");
       setIsMapReady(true);
     });
 
@@ -166,23 +160,7 @@ export default function Map({
 
   // Add saved rectangles to map
   useEffect(() => {
-    console.log(
-      "Map useEffect triggered - rectangles:",
-      rectangles,
-      "isMapLoaded:",
-      isMapLoaded,
-      "isMapReady:",
-      isMapReady
-    );
     if (!map.current || !isMapLoaded || !isMapReady) {
-      console.log(
-        "Map not ready - map.current:",
-        !!map.current,
-        "isMapLoaded:",
-        isMapLoaded,
-        "isMapReady:",
-        isMapReady
-      );
       return;
     }
 
@@ -195,22 +173,16 @@ export default function Map({
 
     // Add new rectangles
     const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
-    console.log("Map received rectangles:", safeRectangles);
     if (safeRectangles.length > 0) {
-      console.log("Processing", safeRectangles.length, "rectangles");
-      const features = safeRectangles.map((rect) => {
-        console.log("Processing rectangle:", rect);
-        return {
-          type: "Feature" as const,
-          properties: {
-            id: rect.id,
-            name: rect.name,
-            created_at: rect.created_at,
-          },
-          geometry: rect.coordinates as any,
-        };
-      });
-      console.log("Created features:", features);
+      const features = safeRectangles.map((rect) => ({
+        type: "Feature" as const,
+        properties: {
+          id: rect.id,
+          name: rect.name,
+          created_at: rect.created_at,
+        },
+        geometry: rect.coordinates as any,
+      }));
 
       map.current.addSource("rectangles", {
         type: "geojson",
@@ -255,6 +227,24 @@ export default function Map({
         }
       });
 
+      // Add right-click handler for delete
+      map.current.on("contextmenu", "rectangles-fill", (e) => {
+        e.preventDefault();
+        if (e.features && e.features.length > 0) {
+          const feature = e.features[0];
+          const rectangle = rectangles.find(
+            (r) => r.id === feature.properties?.id
+          );
+          if (rectangle && onRectangleDeleted) {
+            if (
+              confirm(`Are you sure you want to delete "${rectangle.name}"?`)
+            ) {
+              onRectangleDeleted(rectangle.id);
+            }
+          }
+        }
+      });
+
       // Change cursor on hover
       map.current.on("mouseenter", "rectangles-fill", () => {
         if (map.current) {
@@ -265,6 +255,19 @@ export default function Map({
       map.current.on("mouseleave", "rectangles-fill", () => {
         if (map.current) {
           map.current.getCanvas().style.cursor = "";
+        }
+      });
+
+      // Add hover effect for delete indication
+      map.current.on("mouseenter", "rectangles-fill", () => {
+        if (map.current) {
+          map.current.setPaintProperty("rectangles-fill", "fill-opacity", 0.4);
+        }
+      });
+
+      map.current.on("mouseleave", "rectangles-fill", () => {
+        if (map.current) {
+          map.current.setPaintProperty("rectangles-fill", "fill-opacity", 0.2);
         }
       });
     }

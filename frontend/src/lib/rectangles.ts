@@ -65,18 +65,12 @@ class RectangleAPI {
   }
 
   async getRectangles(): Promise<Rectangle[]> {
-    console.log("Making request to get rectangles...");
-    const headers = this.getHeaders();
-    console.log("Request headers:", headers);
-
     const response = await fetch(`${API_BASE}/api/rectangles/`, {
       method: "GET",
-      headers,
+      headers: this.getHeaders(),
     });
 
-    console.log("Response status:", response.status);
     const data = await this.handleResponse<any>(response);
-    console.log("Response data:", data);
 
     // Handle paginated response
     if (data && data.results && Array.isArray(data.results)) {

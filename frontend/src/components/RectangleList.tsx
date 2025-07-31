@@ -83,7 +83,7 @@ export default function RectangleList({
         {safeRectangles.map((rectangle) => (
           <div
             key={rectangle.id}
-            className={`p-4 border-b border-gray-700/50 last:border-b-0 cursor-pointer transition-all duration-200 ${
+            className={`group p-4 border-b border-gray-700/50 last:border-b-0 cursor-pointer transition-all duration-200 ${
               selectedRectangle?.id === rectangle.id
                 ? "bg-cyan-500/20 border-l-4 border-l-cyan-400"
                 : "hover:bg-gray-800/50"
@@ -96,6 +96,11 @@ export default function RectangleList({
               <div className="flex-1">
                 <h4 className="font-medium text-white mb-1">
                   {rectangle.name}
+                  {selectedRectangle?.id === rectangle.id && (
+                    <span className="ml-2 text-xs text-cyan-400 bg-cyan-500/20 px-2 py-1 rounded">
+                      Selected (Press Delete to remove)
+                    </span>
+                  )}
                 </h4>
                 <p className="text-gray-400 text-sm">
                   Created {formatDate(rectangle.created_at)}
@@ -111,9 +116,15 @@ export default function RectangleList({
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  onRectangleDelete(rectangle.id);
+                  if (
+                    confirm(
+                      `Are you sure you want to delete "${rectangle.name}"?`
+                    )
+                  ) {
+                    onRectangleDelete(rectangle.id);
+                  }
                 }}
-                className="text-red-400 hover:text-red-300 transition-colors p-1 opacity-0 group-hover:opacity-100"
+                className="text-red-400 hover:text-red-300 transition-colors p-2 rounded hover:bg-red-500/20 opacity-0 group-hover:opacity-100"
                 title="Delete rectangle"
               >
                 <svg
