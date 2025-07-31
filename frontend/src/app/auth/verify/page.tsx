@@ -41,7 +41,7 @@ export default function VerifyMagicLink() {
         // Redirect to dashboard after a short delay
         setTimeout(() => {
           router.push("/dashboard");
-        }, 2000);
+        }, 1000);
       } catch (error) {
         setStatus("error");
         const errorMessage =

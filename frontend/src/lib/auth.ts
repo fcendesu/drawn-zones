@@ -32,12 +32,10 @@ export interface AuthError {
   error?: string;
 }
 
-// Helper functions for secure cookie management
 const setCookie = (name: string, value: string, days: number = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
 
-  // Simplified cookie settings for localhost development
   const cookieString = `${name}=${value}; expires=${expires.toUTCString()}; path=/`;
   document.cookie = cookieString;
 };
@@ -85,7 +83,6 @@ class AuthAPI {
       let errorMessage = "An error occurred";
 
       if (error.errors) {
-        // Handle validation errors
         const firstError = Object.values(error.errors)[0];
         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
       } else if (error.error) {
@@ -117,7 +114,6 @@ class AuthAPI {
 
     const data = await this.handleResponse<AuthResponse>(response);
 
-    // Store token in secure cookie
     if (typeof window !== "undefined" && data.token) {
       setCookie("auth_token", data.token);
     }
@@ -165,7 +161,6 @@ class AuthAPI {
 
     const data = await this.handleResponse<{ message: string }>(response);
 
-    // Remove token from cookie
     if (typeof window !== "undefined") {
       deleteCookie("auth_token");
     }

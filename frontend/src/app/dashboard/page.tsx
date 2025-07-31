@@ -4,11 +4,21 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { authAPI, User } from "@/lib/auth";
-
+import { rectangleAPI, Rectangle } from "@/lib/rectangles";
+import Map from "@/components/Map";
+import RectangleList from "@/components/RectangleList";
+import RectangleNameModal from "@/components/RectangleNameModal";
+/* eslint-disable @typescript-eslint/no-explicit-any */
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
+  const [rectangles, setRectangles] = useState<Rectangle[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>("");
+  const [selectedRectangle, setSelectedRectangle] = useState<Rectangle | null>(
+    null
+  );
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [pendingCoordinates, setPendingCoordinates] = useState<any>(null);
   const router = useRouter();
 
   useEffect(() => {
@@ -32,6 +42,21 @@ export default function Dashboard() {
     fetchUserProfile();
   }, [router]);
 
+  useEffect(() => {
+    if (user) {
+      loadRectangles();
+    }
+  }, [user]);
+
+  const loadRectangles = async () => {
+    try {
+      const rectanglesData = await rectangleAPI.getRectangles();
+      setRectangles(rectanglesData);
+    } catch (error) {
+      console.error("Failed to load rectangles:", error);
+    }
+  };
+
   const handleLogout = async () => {
     try {
       await authAPI.logout();
@@ -41,6 +66,40 @@ export default function Dashboard() {
       localStorage.removeItem("authToken");
       router.push("/auth/signin");
     }
+  };
+
+  const handleRectangleCreated = (feature: any) => {
+    setPendingCoordinates(feature.geometry);
+    setIsModalOpen(true);
+  };
+
+  const handleRectangleSaved = async (name: string) => {
+    try {
+      const newRectangle = await rectangleAPI.createRectangle({
+        name,
+        coordinates: pendingCoordinates,
+      });
+      setRectangles((prev) => [newRectangle, ...prev]);
+      setPendingCoordinates(null);
+    } catch (error) {
+      console.error("Failed to save rectangle:", error);
+    }
+  };
+
+  const handleRectangleDeleted = async (id: number) => {
+    try {
+      await rectangleAPI.deleteRectangle(id);
+      setRectangles((prev) => prev.filter((r) => r.id !== id));
+      if (selectedRectangle?.id === id) {
+        setSelectedRectangle(null);
+      }
+    } catch (error) {
+      console.error("Failed to delete rectangle:", error);
+    }
+  };
+
+  const handleRectangleSelected = (rectangle: Rectangle) => {
+    setSelectedRectangle(rectangle);
   };
 
   if (loading) {
@@ -110,6 +169,55 @@ export default function Dashboard() {
           </div>
         </div>
       </header>
+
+      {/* Main Content */}
+      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+        <div className="max-w-7xl mx-auto">
+          {/* Welcome Section */}
+          <div className="mb-6">
+            <h2 className="text-2xl font-bold text-white mb-2">
+              Welcome back, {user?.first_name || user?.email}!
+            </h2>
+            <p className="text-gray-400">
+              Draw rectangles on the map, name them, and manage your zones.
+            </p>
+          </div>
+
+          {/* Map and Rectangle List */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+            {/* Rectangle List */}
+            <div className="lg:col-span-1">
+              <RectangleList
+                rectangles={rectangles}
+                onRectangleSelect={handleRectangleSelected}
+                onRectangleDelete={handleRectangleDeleted}
+                selectedRectangle={selectedRectangle}
+              />
+            </div>
+
+            {/* Map */}
+            <div className="lg:col-span-2 bg-black/20 rounded-lg border border-cyan-500/20 overflow-hidden">
+              <Map
+                rectangles={rectangles}
+                onRectangleCreated={handleRectangleCreated}
+                onRectangleDeleted={handleRectangleDeleted}
+                onRectangleSelected={handleRectangleSelected}
+              />
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Rectangle Name Modal */}
+      <RectangleNameModal
+        isOpen={isModalOpen}
+        onClose={() => {
+          setIsModalOpen(false);
+          setPendingCoordinates(null);
+        }}
+        onSave={handleRectangleSaved}
+        coordinates={pendingCoordinates}
+      />
     </div>
   );
 }
