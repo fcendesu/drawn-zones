@@ -57,8 +57,8 @@ export default function Map({
     map.current = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/dark-v11",
-      center: [-74.5, 40], // Default to New York area
-      zoom: 9,
+      center: [29.032137, 41.107568], // Istanbul Sarıyer
+      zoom: 12,
       attributionControl: false,
     });
 
@@ -341,52 +341,18 @@ export default function Map({
 
       {/* Map controls overlay */}
       <div className="absolute top-4 left-4 z-10">
-        <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2 space-y-2">
+        <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2">
           <button
             onClick={() => draw.current?.changeMode("draw_polygon")}
-            className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+            className="bg-cyan-500 hover:bg-cyan-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors mr-1"
           >
-            Draw Rectangle
+            Draw
           </button>
           <button
             onClick={() => draw.current?.changeMode("simple_select")}
-            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+            className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors mr-1  "
           >
             Select
-          </button>
-          <button
-            onClick={() => {
-              // Save current map state or view
-              if (map.current) {
-                const center = map.current.getCenter();
-                const zoom = map.current.getZoom();
-                localStorage.setItem(
-                  "mapState",
-                  JSON.stringify({
-                    center: [center.lng, center.lat],
-                    zoom: zoom,
-                    timestamp: new Date().toISOString(),
-                  })
-                );
-                // Show a brief success message
-                const saveButton = document.querySelector("[data-save-map]");
-                if (saveButton) {
-                  const originalText = saveButton.textContent;
-                  saveButton.textContent = "Saved!";
-                  saveButton.className =
-                    "bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors";
-                  setTimeout(() => {
-                    saveButton.textContent = originalText;
-                    saveButton.className =
-                      "bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors";
-                  }, 2000);
-                }
-              }
-            }}
-            data-save-map
-            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
-          >
-            Save
           </button>
         </div>
       </div>
