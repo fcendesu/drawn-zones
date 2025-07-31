@@ -24,9 +24,12 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUserProfile = async () => {
       try {
+        console.log("Fetching user profile...");
         const userProfile = await authAPI.getProfile();
+        console.log("User profile loaded:", userProfile);
         setUser(userProfile);
-      } catch {
+      } catch (error) {
+        console.error("Failed to load user profile:", error);
         setError("Failed to load user profile. Please sign in again.");
         // Clear any stored token
         localStorage.removeItem("authToken");
@@ -50,7 +53,9 @@ export default function Dashboard() {
 
   const loadRectangles = async () => {
     try {
+      console.log("Loading rectangles...");
       const rectanglesData = await rectangleAPI.getRectangles();
+      console.log("Loaded rectangles:", rectanglesData);
       setRectangles(Array.isArray(rectanglesData) ? rectanglesData : []);
     } catch (error) {
       console.error("Failed to load rectangles:", error);

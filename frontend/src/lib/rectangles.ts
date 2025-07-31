@@ -65,12 +65,25 @@ class RectangleAPI {
   }
 
   async getRectangles(): Promise<Rectangle[]> {
+    console.log("Making request to get rectangles...");
+    const headers = this.getHeaders();
+    console.log("Request headers:", headers);
+
     const response = await fetch(`${API_BASE}/api/rectangles/`, {
       method: "GET",
-      headers: this.getHeaders(),
+      headers,
     });
 
-    const data = await this.handleResponse<Rectangle[]>(response);
+    console.log("Response status:", response.status);
+    const data = await this.handleResponse<any>(response);
+    console.log("Response data:", data);
+
+    // Handle paginated response
+    if (data && data.results && Array.isArray(data.results)) {
+      return data.results;
+    }
+
+    // Fallback to direct array
     return Array.isArray(data) ? data : [];
   }
 

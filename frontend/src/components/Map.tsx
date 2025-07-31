@@ -169,6 +169,7 @@ export default function Map({
 
     // Add new rectangles
     const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
+    console.log("Map received rectangles:", safeRectangles);
     if (safeRectangles.length > 0) {
       const features = safeRectangles.map((rect) => ({
         type: "Feature" as const,
