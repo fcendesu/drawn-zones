@@ -19,6 +19,7 @@ export default function Dashboard() {
   );
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingCoordinates, setPendingCoordinates] = useState<any>(null);
+  const [showAllZones, setShowAllZones] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
@@ -108,6 +109,12 @@ export default function Dashboard() {
 
   const handleRectangleSelected = (rectangle: Rectangle) => {
     setSelectedRectangle(rectangle);
+    // Automatically show only the selected zone
+    setShowAllZones(false);
+  };
+
+  const handleToggleShowAll = () => {
+    setShowAllZones(!showAllZones);
   };
 
   // Keyboard shortcuts
@@ -222,6 +229,8 @@ export default function Dashboard() {
                 onRectangleSelect={handleRectangleSelected}
                 onRectangleDelete={handleRectangleDeleted}
                 selectedRectangle={selectedRectangle}
+                showAllZones={showAllZones}
+                onToggleShowAll={handleToggleShowAll}
               />
             </div>
 
@@ -232,6 +241,8 @@ export default function Dashboard() {
                 onRectangleCreated={handleRectangleCreated}
                 onRectangleDeleted={handleRectangleDeleted}
                 onRectangleSelected={handleRectangleSelected}
+                selectedRectangle={selectedRectangle}
+                showAllZones={showAllZones}
               />
             </div>
           </div>

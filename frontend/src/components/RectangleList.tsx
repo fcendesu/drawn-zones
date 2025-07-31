@@ -17,6 +17,8 @@ interface RectangleListProps {
   onRectangleSelect: (rectangle: Rectangle) => void;
   onRectangleDelete: (id: number) => void;
   selectedRectangle?: Rectangle | null;
+  showAllZones?: boolean;
+  onToggleShowAll?: () => void;
 }
 
 export default function RectangleList({
@@ -24,6 +26,8 @@ export default function RectangleList({
   onRectangleSelect,
   onRectangleDelete,
   selectedRectangle,
+  showAllZones = true,
+  onToggleShowAll,
 }: RectangleListProps) {
   const [hoveredRectangle, setHoveredRectangle] = useState<Rectangle | null>(
     null
@@ -74,9 +78,19 @@ export default function RectangleList({
   return (
     <div className="bg-black/40 backdrop-blur-lg rounded-lg border border-cyan-500/20">
       <div className="p-4 border-b border-cyan-500/20">
-        <h3 className="text-lg font-semibold text-white">
-          Saved Rectangles ({safeRectangles.length})
-        </h3>
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-semibold text-white">
+            Saved Rectangles ({safeRectangles.length})
+          </h3>
+          {onToggleShowAll && !showAllZones && (
+            <button
+              onClick={onToggleShowAll}
+              className="px-3 py-1 rounded text-sm font-medium transition-colors bg-blue-500 hover:bg-blue-600 text-white"
+            >
+              Show All
+            </button>
+          )}
+        </div>
       </div>
 
       <div className="max-h-96 overflow-y-auto">
@@ -94,14 +108,14 @@ export default function RectangleList({
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
-                <h4 className="font-medium text-white mb-1">
-                  {rectangle.name}
+                <div className="flex items-center">
+                  <h4 className="font-medium text-white mb-1">
+                    {rectangle.name}
+                  </h4>
                   {selectedRectangle?.id === rectangle.id && (
-                    <span className="ml-2 text-xs text-cyan-400 bg-cyan-500/20 px-2 py-1 rounded">
-                      Selected (Press Delete to remove)
-                    </span>
+                    <div className="ml-2 w-2 h-2 bg-cyan-400 rounded-full"></div>
                   )}
-                </h4>
+                </div>
                 <p className="text-gray-400 text-sm">
                   Created {formatDate(rectangle.created_at)}
                 </p>

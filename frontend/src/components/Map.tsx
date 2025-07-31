@@ -29,6 +29,8 @@ interface MapProps {
   onRectangleCreated?: (rectangle: { geometry: unknown }) => void;
   onRectangleDeleted?: (id: number) => void;
   onRectangleSelected?: (rectangle: Rectangle) => void;
+  selectedRectangle?: Rectangle | null;
+  showAllZones?: boolean;
 }
 
 export default function Map({
@@ -36,6 +38,8 @@ export default function Map({
   onRectangleCreated,
   onRectangleDeleted,
   onRectangleSelected,
+  selectedRectangle,
+  showAllZones = true,
 }: MapProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<mapboxgl.Map | null>(null);
@@ -126,6 +130,23 @@ export default function Map({
     // Set up event listeners
     map.current.on("load", () => {
       setIsMapLoaded(true);
+
+      // Restore saved map state if available
+      const savedState = localStorage.getItem("mapState");
+      if (savedState) {
+        try {
+          const state = JSON.parse(savedState);
+          if (state.center && state.zoom) {
+            map.current?.flyTo({
+              center: state.center,
+              zoom: state.zoom,
+              duration: 1000,
+            });
+          }
+        } catch (error) {
+          console.error("Failed to restore map state:", error);
+        }
+      }
     });
 
     // Wait for both load and style to be ready
@@ -178,8 +199,24 @@ export default function Map({
 
       // Add new rectangles
       const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
-      if (safeRectangles.length > 0) {
-        const features = safeRectangles.map((rect) => ({
+      let rectanglesToShow = safeRectangles;
+
+      // If not showing all zones and there's a selected rectangle, show only that one
+      if (!showAllZones && selectedRectangle) {
+        rectanglesToShow = [selectedRectangle];
+
+        // Center the map on the selected rectangle
+        if (selectedRectangle.center_coordinates) {
+          map.current?.flyTo({
+            center: selectedRectangle.center_coordinates,
+            zoom: 12,
+            duration: 1000,
+          });
+        }
+      }
+
+      if (rectanglesToShow.length > 0) {
+        const features = rectanglesToShow.map((rect) => ({
           type: "Feature" as const,
           properties: {
             id: rect.id,
@@ -289,14 +326,21 @@ export default function Map({
     return () => {
       clearTimeout(timeoutId);
     };
-  }, [rectangles, isMapLoaded, isMapReady, onRectangleSelected]);
+  }, [
+    rectangles,
+    selectedRectangle,
+    showAllZones,
+    isMapLoaded,
+    isMapReady,
+    onRectangleSelected,
+  ]);
 
   return (
     <div className="relative w-full h-full">
       <div ref={mapContainer} className="w-full h-full rounded-lg" />
 
       {/* Map controls overlay */}
-      <div className="absolute top-4 right-4 z-10">
+      <div className="absolute top-4 left-4 z-10">
         <div className="bg-black/50 backdrop-blur-sm rounded-lg p-2 space-y-2">
           <button
             onClick={() => draw.current?.changeMode("draw_polygon")}
@@ -309,6 +353,40 @@ export default function Map({
             className="bg-gray-600 hover:bg-gray-700 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
           >
             Select
+          </button>
+          <button
+            onClick={() => {
+              // Save current map state or view
+              if (map.current) {
+                const center = map.current.getCenter();
+                const zoom = map.current.getZoom();
+                localStorage.setItem(
+                  "mapState",
+                  JSON.stringify({
+                    center: [center.lng, center.lat],
+                    zoom: zoom,
+                    timestamp: new Date().toISOString(),
+                  })
+                );
+                // Show a brief success message
+                const saveButton = document.querySelector("[data-save-map]");
+                if (saveButton) {
+                  const originalText = saveButton.textContent;
+                  saveButton.textContent = "Saved!";
+                  saveButton.className =
+                    "bg-green-500 hover:bg-green-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors";
+                  setTimeout(() => {
+                    saveButton.textContent = originalText;
+                    saveButton.className =
+                      "bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors";
+                  }, 2000);
+                }
+              }
+            }}
+            data-save-map
+            className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-2 rounded text-sm font-medium transition-colors"
+          >
+            Save
           </button>
         </div>
       </div>
