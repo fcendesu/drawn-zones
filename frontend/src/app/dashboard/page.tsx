@@ -95,9 +95,7 @@ export default function Dashboard() {
           return [newRectangle, ...safePrev];
         });
         setPendingCoordinates(null);
-      } catch (error) {
-        // Handle error silently or show user feedback if needed
-      }
+      } catch (error) {}
     },
     [pendingCoordinates]
   );
@@ -113,9 +111,7 @@ export default function Dashboard() {
         if (selectedRectangle?.id === id) {
           setSelectedRectangle(null);
         }
-      } catch (error) {
-        // Handle error silently or show user feedback if needed
-      }
+      } catch (error) {}
     },
     [selectedRectangle]
   );

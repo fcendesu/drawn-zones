@@ -34,7 +34,6 @@ export default function RectangleList({
 
   const safeRectangles = Array.isArray(rectangles) ? rectangles : [];
 
-  // Calculate pagination
   const totalPages = Math.ceil(safeRectangles.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;

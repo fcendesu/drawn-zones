@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 interface RectangleNameModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,12 +22,13 @@ export default function RectangleNameModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
 
-  // Check if name already exists
-  const isNameDuplicate =
+  const isNameDuplicate = Boolean(
     name.trim() &&
-    existingNames.some(
-      (existingName) => existingName.toLowerCase() === name.trim().toLowerCase()
-    );
+      existingNames.some(
+        (existingName) =>
+          existingName.toLowerCase() === name.trim().toLowerCase()
+      )
+  );
 
   useEffect(() => {
     if (isOpen) {
