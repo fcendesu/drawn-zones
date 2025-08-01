@@ -333,6 +333,7 @@ export default function Map({
     isMapLoaded,
     isMapReady,
     onRectangleSelected,
+    onRectangleDeleted,
   ]);
 
   return (

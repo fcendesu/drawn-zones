@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { authAPI, User } from "@/lib/auth";
 import { rectangleAPI, Rectangle } from "@/lib/rectangles";
@@ -78,51 +78,56 @@ export default function Dashboard() {
     }
   };
 
-  const handleRectangleCreated = (feature: any) => {
+  const handleRectangleCreated = useCallback((feature: any) => {
     setPendingCoordinates(feature.geometry);
     setIsModalOpen(true);
-  };
+  }, []);
 
-  const handleRectangleSaved = async (name: string) => {
-    try {
-      const newRectangle = await rectangleAPI.createRectangle({
-        name,
-        coordinates: pendingCoordinates,
-      });
-      setRectangles((prev) => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        return [newRectangle, ...safePrev];
-      });
-      setPendingCoordinates(null);
-    } catch (error) {
-      // Handle error silently or show user feedback if needed
-    }
-  };
-
-  const handleRectangleDeleted = async (id: number) => {
-    try {
-      await rectangleAPI.deleteRectangle(id);
-      setRectangles((prev) => {
-        const safePrev = Array.isArray(prev) ? prev : [];
-        return safePrev.filter((r) => r.id !== id);
-      });
-      if (selectedRectangle?.id === id) {
-        setSelectedRectangle(null);
+  const handleRectangleSaved = useCallback(
+    async (name: string) => {
+      try {
+        const newRectangle = await rectangleAPI.createRectangle({
+          name,
+          coordinates: pendingCoordinates,
+        });
+        setRectangles((prev) => {
+          const safePrev = Array.isArray(prev) ? prev : [];
+          return [newRectangle, ...safePrev];
+        });
+        setPendingCoordinates(null);
+      } catch (error) {
+        // Handle error silently or show user feedback if needed
       }
-    } catch (error) {
-      // Handle error silently or show user feedback if needed
-    }
-  };
+    },
+    [pendingCoordinates]
+  );
 
-  const handleRectangleSelected = (rectangle: Rectangle) => {
+  const handleRectangleDeleted = useCallback(
+    async (id: number) => {
+      try {
+        await rectangleAPI.deleteRectangle(id);
+        setRectangles((prev) => {
+          const safePrev = Array.isArray(prev) ? prev : [];
+          return safePrev.filter((r) => r.id !== id);
+        });
+        if (selectedRectangle?.id === id) {
+          setSelectedRectangle(null);
+        }
+      } catch (error) {
+        // Handle error silently or show user feedback if needed
+      }
+    },
+    [selectedRectangle]
+  );
+
+  const handleRectangleSelected = useCallback((rectangle: Rectangle) => {
     setSelectedRectangle(rectangle);
-
     setShowAllZones(false);
-  };
+  }, []);
 
-  const handleToggleShowAll = () => {
+  const handleToggleShowAll = useCallback(() => {
     setShowAllZones(!showAllZones);
-  };
+  }, [showAllZones]);
 
   if (loading) {
     return (

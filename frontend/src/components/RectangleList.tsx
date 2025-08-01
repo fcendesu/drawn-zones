@@ -29,9 +29,6 @@ export default function RectangleList({
   showAllZones = true,
   onToggleShowAll,
 }: RectangleListProps) {
-  const [hoveredRectangle, setHoveredRectangle] = useState<Rectangle | null>(
-    null
-  );
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
@@ -111,8 +108,6 @@ export default function RectangleList({
                 : "hover:bg-gray-800/50"
             }`}
             onClick={() => onRectangleSelect(rectangle)}
-            onMouseEnter={() => setHoveredRectangle(rectangle)}
-            onMouseLeave={() => setHoveredRectangle(null)}
           >
             <div className="flex items-start justify-between">
               <div className="flex-1">
