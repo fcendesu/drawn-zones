@@ -14,7 +14,6 @@ export interface CreateRectangleData {
   coordinates: any;
 }
 
-// Helper functions for secure cookie management
 const getCookie = (name: string): string | null => {
   if (typeof window === "undefined") return null;
 
@@ -51,7 +50,6 @@ class RectangleAPI {
       let errorMessage = "An error occurred";
 
       if (data.errors) {
-        // Handle validation errors
         const firstError = Object.values(data.errors)[0];
         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
       } else if (data.error) {
@@ -60,7 +58,6 @@ class RectangleAPI {
         errorMessage = data.detail;
       }
 
-      // Log error silently
       throw new Error(errorMessage);
     }
 
@@ -75,12 +72,10 @@ class RectangleAPI {
 
     const data = await this.handleResponse<any>(response);
 
-    // Handle paginated response
     if (data && data.results && Array.isArray(data.results)) {
       return data.results;
     }
 
-    // Fallback to direct array
     return Array.isArray(data) ? data : [];
   }
 

@@ -1,4 +1,4 @@
-// Cookie-based JWT Token Implementation
+/* eslint-disable @typescript-eslint/no-unused-vars */
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 export interface User {
@@ -30,6 +30,7 @@ export interface SendMagicLinkResponse {
 export interface AuthError {
   errors?: Record<string, string[]>;
   error?: string;
+  detail?: string;
 }
 
 export interface APIKey {
