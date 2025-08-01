@@ -182,7 +182,7 @@ export default function APIKeyManager({ className = "" }: APIKeyManagerProps) {
             New API Key Created!
           </h3>
           <p className="text-green-200 text-sm mb-3">
-            Copy this key now. You won't be able to see it again.
+            Copy this key now. You won&apos;t be able to see it again.
           </p>
           <div className="flex items-center gap-2">
             <code className="flex-1 p-2 bg-black/30 rounded text-green-300 text-sm font-mono break-all">
@@ -317,7 +317,7 @@ export default function APIKeyManager({ className = "" }: APIKeyManagerProps) {
           <p className="mt-2">
             Example:{" "}
             <code className="bg-black/30 px-1 rounded text-xs">
-              curl -H "Authorization: Token YOUR_KEY"
+              curl -H &quot;Authorization: Token YOUR_KEY&quot;
               http://localhost:8000/api/rectangles/
             </code>
           </p>
