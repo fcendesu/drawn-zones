@@ -50,19 +50,13 @@ export default function LandingPage() {
             visualization.
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          {/* Get Started Button */}
+          <div className="flex justify-center items-center">
             <Link
               href="/auth/signin"
-              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-8 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-400 active:scale-95 active:shadow-inner transition-all duration-200 font-medium text-lg w-full sm:w-auto shadow-xl shadow-cyan-500/25 border border-cyan-400/30 transform hover:scale-105"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 text-black px-8 py-3 rounded-lg hover:from-cyan-400 hover:to-blue-400 active:scale-95 active:shadow-inner transition-all duration-200 font-medium text-lg shadow-xl shadow-cyan-500/25 border border-cyan-400/30 transform hover:scale-105"
             >
               Get Started
-            </Link>
-            <Link
-              href="/demo"
-              className="bg-black/40 backdrop-blur-sm text-cyan-400 px-8 py-3 rounded-lg border-2 border-cyan-500/50 hover:bg-cyan-500/10 hover:border-cyan-400 active:scale-95 active:bg-cyan-500/20 transition-all duration-200 font-medium text-lg w-full sm:w-auto shadow-lg transform hover:scale-105"
-            >
-              View Demo
             </Link>
           </div>
         </div>
@@ -81,7 +75,7 @@ export default function LandingPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M9 20l-5.447-2.724A1 1 0 713 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
+                  d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-1.447-.894L15 4m0 13V4m-6 3l6-3"
                 />
               </svg>
             </div>
@@ -106,7 +100,7 @@ export default function LandingPage() {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 713 12V7a4 4 0 014-4z"
+                  d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"
                 />
               </svg>
             </div>
