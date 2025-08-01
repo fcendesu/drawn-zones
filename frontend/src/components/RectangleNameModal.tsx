@@ -131,7 +131,7 @@ export default function RectangleNameModal({
               <div className="bg-gray-800/50 rounded-lg p-3">
                 <p className="text-gray-400 text-sm mb-1">Coordinates:</p>
                 <p className="text-cyan-400 text-xs font-mono break-all">
-                  {JSON.stringify(coordinates, null, 2)}
+                  {JSON.stringify(coordinates.coordinates, null, 2)}
                 </p>
               </div>
             )}
