@@ -1,23 +1,18 @@
 from django.urls import path
-from .views import (
-    send_magic_link,
-    verify_magic_link,
-    user_profile,
-    logout,
-    auth_status
-)
+from . import views
 
 app_name = 'authentication'
 
 urlpatterns = [
-    # Magic Link Authentication
-    path('magic-link/send/', send_magic_link, name='send_magic_link'),
-    path('magic-link/verify/', verify_magic_link, name='verify_magic_link'),
+    # Magic link authentication
+    path('magic-link/send/', views.send_magic_link, name='send_magic_link'),
+    path('magic-link/verify/', views.verify_magic_link, name='verify_magic_link'),
     
-    # User Profile
-    path('profile/', user_profile, name='user_profile'),
+    # User profile and logout
+    path('profile/', views.user_profile, name='user_profile'),
+    path('logout/', views.logout, name='logout'),
     
-    # Authentication Status & Logout
-    path('status/', auth_status, name='auth_status'),
-    path('logout/', logout, name='logout'),
+    # API Key management
+    path('api-keys/', views.APIKeyListCreateView.as_view(), name='api_key_list_create'),
+    path('api-keys/<int:pk>/', views.APIKeyDetailView.as_view(), name='api_key_detail'),
 ]

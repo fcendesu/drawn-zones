@@ -139,7 +139,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Django REST Framework
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
+        'authentication.authentication.APIKeyTokenAuthentication',
+        'authentication.authentication.APIKeyAuthentication',
+        'authentication.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',
     ],
     'DEFAULT_PERMISSION_CLASSES': [
@@ -166,6 +168,13 @@ if DEBUG:
 
 # Custom User Model
 AUTH_USER_MODEL = 'authentication.User'
+
+# Authentication backends
+AUTHENTICATION_BACKENDS = [
+    'authentication.backends.APIKeyBackend',
+    'authentication.backends.TokenBackend',
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 # Email Configuration for MailHog
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'

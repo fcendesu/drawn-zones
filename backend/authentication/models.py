@@ -71,3 +71,41 @@ class MagicLink(models.Model):
     
     def __str__(self):
         return f"Magic Link for {self.user.email} - {'Used' if self.is_used else 'Active'}"
+
+
+class APIKey(models.Model):
+    """
+    Model to store API keys for developer access to zones
+    """
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='api_keys')
+    name = models.CharField(max_length=100, help_text="A descriptive name for this API key")
+    key = models.CharField(max_length=64, unique=True, editable=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['-created_at']
+        indexes = [
+            models.Index(fields=['key', 'is_active']),
+            models.Index(fields=['user', 'is_active']),
+        ]
+    
+    def save(self, *args, **kwargs):
+        if not self.key:
+            # Generate a unique API key
+            self.key = self.generate_key()
+        super().save(*args, **kwargs)
+    
+    def generate_key(self):
+        """Generate a unique API key"""
+        import secrets
+        return secrets.token_urlsafe(32)
+    
+    def update_last_used(self):
+        """Update the last used timestamp"""
+        self.last_used_at = timezone.now()
+        self.save(update_fields=['last_used_at'])
+    
+    def __str__(self):
+        return f"API Key '{self.name}' for {self.user.email}"

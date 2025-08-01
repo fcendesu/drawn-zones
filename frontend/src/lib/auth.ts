@@ -32,6 +32,19 @@ export interface AuthError {
   error?: string;
 }
 
+export interface APIKey {
+  id: number;
+  name: string;
+  key: string;
+  created_at: string;
+  last_used_at: string | null;
+  is_active: boolean;
+}
+
+export interface CreateAPIKeyRequest {
+  name: string;
+}
+
 const setCookie = (name: string, value: string, days: number = 7) => {
   const expires = new Date();
   expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000);
@@ -76,7 +89,18 @@ class AuthAPI {
   }
 
   private async handleResponse<T>(response: Response): Promise<T> {
-    const data = await response.json();
+    let data;
+
+    try {
+      data = await response.json();
+    } catch (error) {
+      // If response is not JSON, try to get text
+      const text = await response.text();
+      console.error("Non-JSON response:", text);
+      throw new Error(
+        `Server returned invalid response: ${response.status} ${response.statusText}`
+      );
+    }
 
     if (!response.ok) {
       const error: AuthError = data;
@@ -87,6 +111,8 @@ class AuthAPI {
         errorMessage = Array.isArray(firstError) ? firstError[0] : firstError;
       } else if (error.error) {
         errorMessage = error.error;
+      } else if (error.detail) {
+        errorMessage = error.detail;
       }
 
       throw new Error(errorMessage);
@@ -180,3 +206,100 @@ class AuthAPI {
 }
 
 export const authAPI = new AuthAPI();
+
+// API Key management functions
+export async function createAPIKey(data: CreateAPIKeyRequest): Promise<APIKey> {
+  const token = authAPI.getToken();
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+
+  const response = await fetch(`${API_BASE}/api/auth/api-keys/`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Failed to create API key";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorData.detail || errorMessage;
+    } catch (error) {
+      console.error("Error parsing error response:", error);
+    }
+    throw new Error(errorMessage);
+  }
+
+  try {
+    return await response.json();
+  } catch (error) {
+    console.error("Error parsing API key response:", error);
+    throw new Error("Failed to parse API key response");
+  }
+}
+
+export async function getAPIKeys(): Promise<APIKey[]> {
+  const token = authAPI.getToken();
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+
+  const response = await fetch(`${API_BASE}/api/auth/api-keys/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Failed to fetch API keys";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorData.detail || errorMessage;
+    } catch (error) {
+      console.error("Error parsing error response:", error);
+    }
+    throw new Error(errorMessage);
+  }
+
+  try {
+    const data = await response.json();
+    // Handle paginated response
+    const results = data.results || data;
+    return results;
+  } catch (error) {
+    console.error("Error parsing API keys response:", error);
+    throw new Error("Failed to parse API keys response");
+  }
+}
+
+export async function deleteAPIKey(id: number): Promise<void> {
+  const token = authAPI.getToken();
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+
+  const response = await fetch(`${API_BASE}/api/auth/api-keys/${id}/`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Token ${token}`,
+    },
+  });
+
+  if (!response.ok) {
+    let errorMessage = "Failed to delete API key";
+    try {
+      const errorData = await response.json();
+      errorMessage = errorData.error || errorData.detail || errorMessage;
+    } catch (error) {
+      console.error("Error parsing error response:", error);
+    }
+    throw new Error(errorMessage);
+  }
+}

@@ -8,6 +8,7 @@ import { rectangleAPI, Rectangle } from "@/lib/rectangles";
 import Map from "@/components/Map";
 import RectangleList from "@/components/RectangleList";
 import RectangleNameModal from "@/components/RectangleNameModal";
+import APIKeyManager from "@/components/APIKeyManager";
 /* eslint-disable @typescript-eslint/no-explicit-any */
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
@@ -20,6 +21,7 @@ export default function Dashboard() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [pendingCoordinates, setPendingCoordinates] = useState<any>(null);
   const [showAllZones, setShowAllZones] = useState(true);
+  const [activeTab, setActiveTab] = useState<"zones" | "api-keys">("zones");
   const router = useRouter();
 
   useEffect(() => {
@@ -31,7 +33,10 @@ export default function Dashboard() {
         console.error("Failed to load user profile:", error);
         setError("Failed to load user profile. Please sign in again.");
         // Clear any stored token
-        localStorage.removeItem("authToken");
+        if (typeof window !== "undefined") {
+          document.cookie =
+            "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+        }
         // Redirect to signin after a delay
         setTimeout(() => {
           router.push("/auth/signin");
@@ -65,8 +70,11 @@ export default function Dashboard() {
       await authAPI.logout();
       router.push("/auth/signin");
     } catch {
-      // Even if logout fails on server, clear local storage and redirect
-      localStorage.removeItem("authToken");
+      // Even if logout fails on server, clear cookies and redirect
+      if (typeof window !== "undefined") {
+        document.cookie =
+          "auth_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
       router.push("/auth/signin");
     }
   };
@@ -217,32 +225,68 @@ export default function Dashboard() {
             </p>
           </div>
 
-          {/* Map and Rectangle List */}
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-240px)]">
-            {/* Rectangle List */}
-            <div className="lg:col-span-1 h-full">
-              <RectangleList
-                rectangles={rectangles}
-                onRectangleSelect={handleRectangleSelected}
-                onRectangleDelete={handleRectangleDeleted}
-                selectedRectangle={selectedRectangle}
-                showAllZones={showAllZones}
-                onToggleShowAll={handleToggleShowAll}
-              />
-            </div>
-
-            {/* Map */}
-            <div className="lg:col-span-3 bg-black/20 rounded-lg border border-cyan-500/20 overflow-hidden h-[600px]">
-              <Map
-                rectangles={rectangles}
-                onRectangleCreated={handleRectangleCreated}
-                onRectangleDeleted={handleRectangleDeleted}
-                onRectangleSelected={handleRectangleSelected}
-                selectedRectangle={selectedRectangle}
-                showAllZones={showAllZones}
-              />
+          {/* Tabs */}
+          <div className="mb-6">
+            <div className="border-b border-gray-700">
+              <nav className="-mb-px flex space-x-8">
+                <button
+                  onClick={() => setActiveTab("zones")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === "zones"
+                      ? "border-cyan-500 text-cyan-400"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  Zones
+                </button>
+                <button
+                  onClick={() => setActiveTab("api-keys")}
+                  className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
+                    activeTab === "api-keys"
+                      ? "border-cyan-500 text-cyan-400"
+                      : "border-transparent text-gray-400 hover:text-gray-300 hover:border-gray-300"
+                  }`}
+                >
+                  API Keys
+                </button>
+              </nav>
             </div>
           </div>
+
+          {/* Tab Content */}
+          {activeTab === "zones" && (
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-240px)]">
+              {/* Rectangle List */}
+              <div className="lg:col-span-1 h-full">
+                <RectangleList
+                  rectangles={rectangles}
+                  onRectangleSelect={handleRectangleSelected}
+                  onRectangleDelete={handleRectangleDeleted}
+                  selectedRectangle={selectedRectangle}
+                  showAllZones={showAllZones}
+                  onToggleShowAll={handleToggleShowAll}
+                />
+              </div>
+
+              {/* Map */}
+              <div className="lg:col-span-3 bg-black/20 rounded-lg border border-cyan-500/20 overflow-hidden h-[600px]">
+                <Map
+                  rectangles={rectangles}
+                  onRectangleCreated={handleRectangleCreated}
+                  onRectangleDeleted={handleRectangleDeleted}
+                  onRectangleSelected={handleRectangleSelected}
+                  selectedRectangle={selectedRectangle}
+                  showAllZones={showAllZones}
+                />
+              </div>
+            </div>
+          )}
+
+          {activeTab === "api-keys" && (
+            <div className="max-w-4xl mx-auto">
+              <APIKeyManager />
+            </div>
+          )}
         </div>
       </main>
 

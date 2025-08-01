@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
 from django.core.validators import validate_email
-from .models import MagicLink
+from .models import MagicLink, APIKey
 import re
 
 User = get_user_model()
@@ -89,3 +89,27 @@ class UserProfileSerializer(serializers.ModelSerializer):
         if User.objects.exclude(pk=user.pk).filter(username=value).exists():
             raise serializers.ValidationError("This username is already taken.")
         return value
+
+
+class MagicLinkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = MagicLink
+        fields = ['token', 'created_at', 'expires_at', 'is_used', 'used_at']
+        read_only_fields = ['token', 'created_at', 'expires_at', 'is_used', 'used_at']
+
+
+class APIKeySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = APIKey
+        fields = ['id', 'name', 'key', 'created_at', 'last_used_at', 'is_active']
+        read_only_fields = ['id', 'key', 'created_at', 'last_used_at']
+
+
+class APIKeyCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = APIKey
+        fields = ['name']
+    
+    def create(self, validated_data):
+        validated_data['user'] = self.context['request'].user
+        return super().create(validated_data)
