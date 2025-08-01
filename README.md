@@ -54,13 +54,19 @@ It also provides a developer API, enabling users to fetch their own rectangles t
    docker compose up -d
    ```
 
-4. **Access the application**
+4. **Run Migrations**
+
+   ```bash
+   docker compose exec backend python manage.py migrate
+   ```
+
+5. **Access the application**
 
    - Frontend: http://localhost:3000
    - Backend API: http://localhost:8000
    - MailHog: http://localhost:8025
 
-5. **Sign In Process**
+6. **Sign In Process**
    - Enter your email
    - Check MailHog at http://localhost:8025 for the magic link email
    - Click the magic link in the email to automatically sign in
