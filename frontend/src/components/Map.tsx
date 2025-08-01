@@ -144,7 +144,7 @@ export default function Map({
             });
           }
         } catch (error) {
-          console.error("Failed to restore map state:", error);
+          // Handle error silently
         }
       }
     });

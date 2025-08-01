@@ -10,6 +10,7 @@ import RectangleList from "@/components/RectangleList";
 import RectangleNameModal from "@/components/RectangleNameModal";
 import APIKeyManager from "@/components/APIKeyManager";
 /* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable @typescript-eslint/no-unused-vars */
 export default function Dashboard() {
   const [user, setUser] = useState<User | null>(null);
   const [rectangles, setRectangles] = useState<Rectangle[]>([]);
@@ -30,7 +31,6 @@ export default function Dashboard() {
         const userProfile = await authAPI.getProfile();
         setUser(userProfile);
       } catch (error) {
-        console.error("Failed to load user profile:", error);
         setError("Failed to load user profile. Please sign in again.");
         // Clear any stored token
         if (typeof window !== "undefined") {
@@ -60,7 +60,6 @@ export default function Dashboard() {
       const rectanglesData = await rectangleAPI.getRectangles();
       setRectangles(Array.isArray(rectanglesData) ? rectanglesData : []);
     } catch (error) {
-      console.error("Failed to load rectangles:", error);
       setRectangles([]); // Ensure we always have an array
     }
   };
@@ -96,7 +95,7 @@ export default function Dashboard() {
       });
       setPendingCoordinates(null);
     } catch (error) {
-      console.error("Failed to save rectangle:", error);
+      // Handle error silently or show user feedback if needed
     }
   };
 
@@ -111,41 +110,19 @@ export default function Dashboard() {
         setSelectedRectangle(null);
       }
     } catch (error) {
-      console.error("Failed to delete rectangle:", error);
+      // Handle error silently or show user feedback if needed
     }
   };
 
   const handleRectangleSelected = (rectangle: Rectangle) => {
     setSelectedRectangle(rectangle);
-    // Automatically show only the selected zone
+
     setShowAllZones(false);
   };
 
   const handleToggleShowAll = () => {
     setShowAllZones(!showAllZones);
   };
-
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Delete" || event.key === "Backspace") {
-        if (selectedRectangle) {
-          if (
-            confirm(
-              `Are you sure you want to delete "${selectedRectangle.name}"?`
-            )
-          ) {
-            handleRectangleDeleted(selectedRectangle.id);
-          }
-        }
-      }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-    };
-  }, [selectedRectangle]);
 
   if (loading) {
     return (

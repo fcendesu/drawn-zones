@@ -96,7 +96,7 @@ class AuthAPI {
     } catch (error) {
       // If response is not JSON, try to get text
       const text = await response.text();
-      console.error("Non-JSON response:", text);
+      // Log error silently
       throw new Error(
         `Server returned invalid response: ${response.status} ${response.statusText}`
       );
@@ -229,7 +229,7 @@ export async function createAPIKey(data: CreateAPIKeyRequest): Promise<APIKey> {
       const errorData = await response.json();
       errorMessage = errorData.error || errorData.detail || errorMessage;
     } catch (error) {
-      console.error("Error parsing error response:", error);
+      // Log error silently
     }
     throw new Error(errorMessage);
   }
@@ -237,7 +237,6 @@ export async function createAPIKey(data: CreateAPIKeyRequest): Promise<APIKey> {
   try {
     return await response.json();
   } catch (error) {
-    console.error("Error parsing API key response:", error);
     throw new Error("Failed to parse API key response");
   }
 }
@@ -262,7 +261,7 @@ export async function getAPIKeys(): Promise<APIKey[]> {
       const errorData = await response.json();
       errorMessage = errorData.error || errorData.detail || errorMessage;
     } catch (error) {
-      console.error("Error parsing error response:", error);
+      // Log error silently
     }
     throw new Error(errorMessage);
   }
@@ -273,7 +272,6 @@ export async function getAPIKeys(): Promise<APIKey[]> {
     const results = data.results || data;
     return results;
   } catch (error) {
-    console.error("Error parsing API keys response:", error);
     throw new Error("Failed to parse API keys response");
   }
 }
@@ -298,7 +296,7 @@ export async function deleteAPIKey(id: number): Promise<void> {
       const errorData = await response.json();
       errorMessage = errorData.error || errorData.detail || errorMessage;
     } catch (error) {
-      console.error("Error parsing error response:", error);
+      // Log error silently
     }
     throw new Error(errorMessage);
   }

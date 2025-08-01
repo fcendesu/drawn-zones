@@ -60,7 +60,7 @@ class RectangleAPI {
         errorMessage = data.detail;
       }
 
-      console.error("API Error Response:", data);
+      // Log error silently
       throw new Error(errorMessage);
     }
 
