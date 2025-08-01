@@ -44,6 +44,7 @@ It also provides a developer API, enabling users to fetch their own rectangles t
 2. **Create Environment File (Works on Arch Linux)**
 
    ```bash
+   # Replace your Mapbox public key
     cp .env.example .env
    ```
 
