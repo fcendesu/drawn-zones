@@ -10,9 +10,9 @@ _Main dashboard showing interactive map with drawn rectangles and management int
 
 ## 🎥 Demo Video
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/NadwhUsrrDU" title="DrawnZones Demo" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+[![DrawnZones Demo](https://img.youtube.com/vi/NadwhUsrrDU/0.jpg)](https://youtu.be/NadwhUsrrDU)
 
-_Watch a demo of DrawnZones in action_
+_Watch a demo of DrawnZones in action - Click the thumbnail to view the video_
 
 ## 🎯 What is DrawZones
 
