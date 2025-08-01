@@ -194,7 +194,7 @@ export default function Dashboard() {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 p-4 sm:p-6 lg:p-8">
+      <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-8">
         <div className="max-w-7xl mx-auto">
           {/* Welcome Section */}
           <div className="mb-6">
@@ -233,7 +233,7 @@ export default function Dashboard() {
 
           {/* Tab Content */}
           {activeTab === "zones" && (
-            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-240px)]">
+            <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[calc(100vh-240px)] mb-16">
               {/* Rectangle List */}
               <div className="lg:col-span-1 h-full">
                 <RectangleList
