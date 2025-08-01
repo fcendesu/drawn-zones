@@ -73,6 +73,8 @@ It also provides a developer API, enabling users to fetch their own rectangles t
 
 ## 🏗️ Architecture
 
+![Architecture](assets/Architecture.png)
+
 #### Tech Stack:
 
 - **Frontend**: Next.js 15 with TypeScript - my mostly used framework after Expo
